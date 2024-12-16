@@ -605,7 +605,6 @@
     <script src="batimentsAsni.geojson"type="application/javascript"></script>
     <script src="batimentsAssaki.geojson"type="application/javascript"></script>
     <script src="batimentsTahnaout.geojson"type="application/javascript"></script>
-    <script src="batimentsTalat.geojson"type="application/javascript"></script>
 
 </head>
 <body>
@@ -1154,8 +1153,7 @@
         addBatimentsLayer(Btahnaout, "batimentLayer5");
         addBatimentsLayer(Basni, "batimentLayer6");
         addBatimentsLayer(Bassaki, "batimentLayer7");
-        addBatimentsLayer(Btalat, "batimentLayer8");
-
+        
         // Fonction pour créer un item de liste pour les douars
         function createDouarListItem(douar, geojsonData) {
             const li = document.createElement("li");
@@ -1237,7 +1235,6 @@
         { name: "Tahnaout", batiments: Btahnaout.features.length },
         { name: "Asni", batiments: Basni.features.length },
         { name: "Assaki", batiments: Bassaki.features.length },
-        { name: "Tlat nyaaqoub", batiments: Btalat.features.length },
     ];
 
     // Extraire les noms des douars et le nombre de bâtiments
@@ -1257,7 +1254,7 @@
                     {
                         label: 'Nombre de Bâtiments', // Légende
                         data: batimentsData, // Données pour chaque douar
-                        backgroundColor: ['#B18E6D', '#A8805A', '#96724F', '#846445', '#71553C', '#5F4732', '#4C3928', '#3A2B1E'], // Couleurs pour chaque secteur
+                        backgroundColor: ['#B18E6D', '#A8805A', '#96724F', '#846445', '#71553C', '#5F4732', '#4C3928'], // Couleurs pour chaque secteur
                         borderColor: '#FFFFFF', // Couleur de la bordure des secteurs (blanc)
                         borderWidth: 1, // Largeur de la bordure
                     },
