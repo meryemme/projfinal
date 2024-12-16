@@ -1,0 +1,8 @@
+var DouarTahnaout = {
+"type": "FeatureCollection",
+"name": "DouarTahnaout",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "Nom": "Tahnouat" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -7.935299516390367, 31.385004812293033 ], [ -7.898613157707738, 31.372776026065491 ], [ -7.916082852318513, 31.286301037742149 ], [ -7.966744966689762, 31.26533740420922 ], [ -7.992076023875387, 31.300276793430772 ], [ -7.987708600222693, 31.370155571873873 ], [ -7.935299516390367, 31.385004812293033 ] ] ] ] } }
+]
+}

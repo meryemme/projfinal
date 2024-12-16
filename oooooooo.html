@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <title>Géoportail d'El Haouz</title>
+    <link rel="icon" href="logopage.png" type="image/png">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
+	<script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js" type="text/javascript"></script>
+    <!-- Utilisation de leaflet-control-minimap, version stable et compatible -->
+    <link rel="stylesheet" href="C:/Users/ThinkPad/Downloads/Nouveau%20dossier/src/Control.MiniMap.css" />
+	<script src="C:/Users/ThinkPad/Downloads/Nouveau%20dossier/src/Control.MiniMap.js" type="text/javascript"></script>
+    <style>
+        /* Style de l'en-tête */
+        header {
+            background-color: #255d98; /* Couleur bleu similaire */
+            position:fixed;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            font-family: Arial, sans-serif;
+            color: white;
+            z-index: 2000;
+            top: 0;          /* Aligné au bord supérieur */
+            left: 0;
+            width: 100%;     /* Prend toute la largeur */
+            height: 80px; /* Ajustez selon votre besoin */
+        }
+
+        /* Logo */
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            width: 100px; /* Taille de logo ajustée */
+            height: auto;
+            margin-right: 15px;
+        }
+        /* Titre */
+        h1 {
+            font-size: 20px; /* Taille du titre ajustée pour plus de lisibilité */
+            color: white; /* Couleur du texte en blanc */
+            font-weight: 40; /* Poids du texte plus léger */
+            text-transform: uppercase; /* Majuscules */
+            letter-spacing: 1px; /* Espacement entre les lettres pour une meilleure lisibilité */
+            margin: 0;
+            font-family: 'Arial', sans-serif; /* Police moderne */
+            line-height: 1; /* Espacement entre les lignes pour aérer le texte */
+            text-shadow: 1px 1px 4px rgba(40, 40, 40, 0.5); /* Ombre légère et subtile */
+        }
+        a {
+            text-decoration: none; /* Supprime le soulignement des liens */
+            color: inherit; /* Assure que le lien hérite de la couleur du texte parent */
+        }
+
+        a:hover {
+            text-decoration: none; /* Supprime le soulignement au survol */
+            color: inherit; /* Conserve la couleur au survol */
+        }
+
+        /* Menu de navigation */
+        nav {
+            flex-grow: 1;
+            text-align: right;
+            display: flex;
+            justify-content: flex-end; /* Assurez-vous que les éléments sont alignés à droite */
+        }
+
+        .nav-links {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex; /* Flexbox pour aligner les éléments sur la même ligne */
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-item {
+            position: relative;
+            white-space: nowrap; /* Empêche la coupure de ligne dans chaque élément */
+        }
+
+        /* Liens du menu */
+        .nav-item a {
+            text-decoration: none;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            padding: 12px 18px;
+            border-radius: 4px;
+            display: block;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        /* Effet de survol pour les liens */
+        .nav-item a:hover {
+            background-color: #0056b3; /* Fond bleu au survol */
+            color: white;
+            transform: translateY(-2px); /* Effet d'élévation */
+        }
+
+        /* Sous-menu */
+        .submenu {
+            display: none;
+            list-style: none;
+            padding: 0;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #ffffff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            min-width: 200px;
+            border-radius: 5px;
+            z-index: 10;
+        }
+
+        /* Liens dans le sous-menu */
+        .submenu li a {
+            color: #333;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 10px 20px;
+            display: block;
+            transition: color 0.3s ease, background-color 0.3s ease;
+        }
+
+        /* Effet au survol des liens dans le sous-menu */
+        .submenu li a:hover {
+            background-color: #f1f1f1;
+            color: #007bff;
+        }
+
+        /* Afficher le sous-menu au survol de la nav-item */
+        .nav-item:hover .submenu {
+            display: block;
+        }
+
+        .nav-item:hover > a {
+            color: #0056b3; /* Change la couleur du lien principal lors du survol */
+        }
+
+        /* Animation d'apparition du sous-menu */
+        .submenu {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-item:hover .submenu {
+            opacity: 1;
+        }
+
+        /* Ajout d'un effet de transition douce à l'apparition du menu */
+        .nav-item:hover > a {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+
+        /* Styles personnalisés pour le carrousel */
+        #splideBanner {
+                    width: 100%; /* Largeur de la page */
+                    max-width: 1800px; /* Largeur maximale */
+                    margin: 0 auto; /* Centrer horizontalement */
+                    overflow: hidden; /* Masquer les débordements */ }
+
+        .splide {
+            width: 100%; /* Le carrousel occupe toute la largeur */
+            height: 600px; /* Hauteur fixe pour le carrousel */
+            position: relative;
+        }
+
+        .splide__slide img {
+            width: 100%; /* Les images prennent toute la largeur */
+            height: 90%; /* Les images prennent toute la hauteur */
+            object-fit: cover; /* Recouvre le conteneur sans déformation */
+            border-radius: 10px; /* Coins légèrement arrondis */
+        }
+
+        /* Pagination (points sous le carrousel) */
+        .splide__pagination {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        .splide__pagination__page {
+            width: 12px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            margin: 0 5px;
+            transition: background 0.3s;
+        }
+
+        .splide__pagination__page.is-active {
+            background: #446aba; /* Couleur active */
+        }
+
+        /* Flèches de navigation */
+        .splide__arrow {
+            background:none;
+            color: white;
+            border-radius: 50%;
+            font-size: 20px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .splide__arrow--prev {
+            left: 15px;
+        }
+
+        .splide__arrow--next {
+            right: 15px;
+        }
+
+        /* Spinner style */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #4e5cd8;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        /* Styles généraux */
+
+        .hero {
+            position: relative;
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: background-image 0.5s ease-in-out;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: left; /* Justification du texte à gauche */
+            max-width: 800px; /* Ajout d'une largeur max pour éviter que le texte soit trop large */
+            margin: 0 20px; /* Espacement pour éviter que le texte touche les bords */
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: fadeInUp 1s ease-out forwards;
+            animation-delay: 4s;
+            font-style:italic;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInLeft 1s ease-out forwards;
+            animation-delay: 5s;
+            font-style: italic;
+        }
+
+        .hero .cta-button {
+            text-decoration: none;
+            background: #c2bebd;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: background 0.3s;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease-out forwards;
+            animation-delay: 1.5s;
+        }
+
+        .hero .cta-button:hover {
+            background: #e3d9d8;
+        }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 2;
+            border-radius: 5px;
+        }
+
+        .slider-btn:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .prev-btn {
+            left: 20px;
+        }
+
+        .next-btn {
+            right: 20px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInLeft {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Section globale */
+        #iconic-articles {
+            background-color: #f9f9f9;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        #iconic-articles .section-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        /* Grille des articles */
+        .articles-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* Carte d'article */
+        .article-card {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 300px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .article-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Icône */
+        .icon-wrapper {
+            margin: 0 auto 15px;
+            width: 60px;
+            height: 60px;
+            background-color: #e6f7ff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .icon-wrapper img {
+            width: 40px;
+            height: 40px;
+        }
+
+        /* Titre */
+        .article-title {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        /* Description */
+        .article-description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* Lien Lire Plus */
+        .read-more {
+            display: inline-block;
+            color: #007bff;
+            font-weight: bold;
+            text-decoration: none;
+            border: 1px solid #007bff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .read-more:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        
+                /* Style de la flèche */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4e5cd8;
+            color: white;
+            border-radius: 50%;
+            padding: 10px;
+            font-size: 2rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: none; /* Par défaut, la flèche est cachée */
+        }
+
+        /* Flèche au survol */
+        .back-to-top:hover {
+            background-color: #4e5cd8;;
+        }
+
+        /* Style général du footer */
+        .footer {
+            background-color: #255d98;
+            color: white;
+            width: 100%;
+            padding: 40px 20px;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        /* Style pour chaque section du footer */
+        .footer-left, .footer-links, .footer-contact {
+            flex: 1;
+            padding: 10px;
+            margin: 10px;
+            max-width: 300px;
+        }
+
+        .footer-left h3, .footer-links h4, .footer-contact h4 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .footer-left p, .footer-contact p {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Liste de liens utiles */
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin: 10px 0;
+        }
+
+        .footer-links a {
+            color: #d7d29f;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #d9d1d1c7;
+        }
+
+        /* Style du bas de page (footer-bottom) */
+        .footer-bottom {
+            background-color: #255d98;
+            padding: 20px;
+            font-size: 1rem;
+            color: #ecf0f1;
+        }
+
+        .footer-bottom p {
+            margin: 5px 0;
+        }
+
+        /* Responsive design pour les petits écrans */
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        .about {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 40px;
+        background-color: #ffffff;
+        }
+
+        .about-content {
+        flex: 1;
+        padding-right: 30px;
+        }
+
+        .about-content h2 {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: #000000;
+        }
+
+        .about-content p {
+        font-size: 1.2rem;
+        color: #070606;
+        }
+
+        .about-content h5 {
+            font-size: 1.2rem;
+        color: #000000;
+        }
+
+        .about-image {
+        flex: 1;
+        position: relative;
+        }
+
+        .about-image img {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px;
+        }
+
+        .about-image::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 8px;
+        }
+        /* Responsive design pour les petits écrans */
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+
+
+                /* Assurez-vous que la carte principale a position relative */
+        #map {
+            position: relative; /* Positionner la carte comme référence pour la mini-carte */
+            width: 100%;
+            height: 50vh;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+        }
+
+
+
+
+        /* Assurer que le bouton d'affichage de l'épicentre soit centré */
+        #controls {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        #showEpicenter {
+            background-color: #25347d;
+            color: white;
+            font-size: 16px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        #showEpicenter:hover {
+            background-color: #3a4d8c;
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        #showEpicenter:active {
+            transform: scale(0.98);
+        }
+
+        /* S'assurer que le carrousel prend la largeur disponible */
+        .splide__track {
+            width: 100%;
+            max-height: 400px;
+            overflow: hidden;
+        }
+
+        /* Style de la section contenant la carte */
+        .about1 {
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+            background-color: #f4f4f4;  /* Couleur de fond douce pour l'arrière-plan */
+            margin-top: 30px;  /* Espacement avant la section de la carte */
+            }
+        .about1-content h2 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #000000;
+            }
+
+        
+
+
+        #contact {
+        padding: 20px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        max-width: 600px;
+        margin: 20px auto;
+        }
+
+        #contact h2 {
+        text-align: center;
+        }
+
+        form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        }
+
+        input, textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        }
+
+        button {
+        background-color: #007BFF;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        }
+
+        button:hover {
+        background-color: #0056b3;
+        }
+        #contact {
+        padding: 20px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        max-width: 600px;
+        margin: 20px auto;
+        }
+
+        #contact h2 {
+        text-align: center;
+        }
+
+        form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        }
+
+        input, textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        }
+
+        button {
+        background-color: #007BFF;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        }
+
+        button:hover {
+        background-color: #0056b3;
+        }
+
+       
+
+                
+
+    </style>
+</head>
+<body>
+    <!-- Spinner -->
+    <div id="loading">
+        <div class="spinner"></div>
+    </div>
+    <script>
+        // Simuler un chargement long
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+            }, 3000); // 3 secondes pour tester visuellement
+        });
+    </script>
+
+    <header>
+        <div class="header-logo">
+            <img src="C:\Users\ThinkPad\Desktop\haouz\logo_S.png" alt="Logo" class="logo">
+            <a href="oooooooo.html">
+            <h1>Al Haouz en Carte : </br> Explorer l'Impact du Séisme sur les Bâtiments</h1>
+            </a>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="C:\Users\ThinkPad\Downloads\Nouveau dossier\plateforme2originale.html">Géoportail d'Al Haouz</a>
+                </li>
+                <li class="nav-item">
+                    <a href="C:/Users/ThinkPad/Desktop/haouz/services.html">Services</a>
+                    <ul class="submenu">
+                        <li><a href="C:/Users/ThinkPad/Desktop/haouz/services.html">Analyse des Bâtiments</a></li>
+                        <li><a href="C:/Users/ThinkPad/Desktop/haouz/services.html">Cartographie Interactive</a></li>
+                        <li><a href="C:/Users/ThinkPad/Desktop/haouz/services.html">Statistiques Détaillées</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="Articles.html">Articles</a>
+                </li>
+                <li class="nav-item"><a href="contact.html">À Propos de Nous</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="back-to-top">
+        ↑
+    </div>
+    <script>
+        // Lorsque l'utilisateur défile
+    window.onscroll = function () {
+        var backToTopButton = document.querySelector('.back-to-top');
+
+        // Vérifier si on a défilé assez bas pour afficher la flèche
+        if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+            backToTopButton.style.display = "block"; // Afficher la flèche
+            backToTopButton.style.opacity = 1; // Rendre la flèche visible
+        } else {
+            backToTopButton.style.display = "none"; // Cacher la flèche quand on est en haut
+        }
+    };
+
+    // Lorsque l'on clique sur la flèche
+    document.querySelector('.back-to-top').addEventListener('click', function () {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth' // Défilement fluide jusqu'en haut
+        });
+    });
+    </script>
+
+    <section class="splide" aria-label="Carrousel d'images">
+        <div class="splide__track">
+            <ul class="splide__list">
+                <li class="splide__slide">
+                    <img src="C:\Users\ThinkPad\Desktop\haouz\H0.jpeg" alt="Image 1">
+                </li>
+                <li class="splide__slide">
+                    <img src="C:\Users\ThinkPad\Desktop\haouz\H1.jpeg" alt="Image 2">
+                </li>
+                <li class="splide__slide">
+                    <img src="C:\Users\ThinkPad\Desktop\haouz\H2.jpeg" alt="Image 3">
+                </li>
+            </ul>
+        </div>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide/dist/js/splide.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new Splide('.splide', {
+                type: 'loop',
+                perPage: 1,
+                autoplay: true,
+                interval: 3000,
+            }).mount();
+        });
+    </script>
+
+    <section class="about">
+        <div class="about-content">
+        <h2>L'objectif de notre Géoportail</h2>
+        <p>Notre plateforme Al Haouz en carte vise à fournir un outil interactif et puissant pour suivre et analyser les conséquences du tremblement de terre de 2023 dans la province d’El Haouz. À travers des cartes interactives et des graphiques comparatifs, les utilisateurs pourront visualiser les impacts avant et après le séisme.
+            Nous mettons à disposition une base de données détaillée sur les bâtiments touchés et non touchés, permettant d’effectuer des analyses spatiales et non spatiales. Chaque utilisateur pourra composer ses propres requêtes pour explorer les données selon ses besoins.</p>
+            <a href="C:\Users\ThinkPad\Downloads\Nouveau dossier\plateforme2originale.html">
+                <h5>Al Haouz en Carte : </br> Explorer les fonctionalités du Géoportail</h5>
+            </a>
+        </div>
+        <div class="about-image">
+        <img src="C:\Users\ThinkPad\Desktop\haouz\geoportail.png" alt="Surveying Equipment">
+        </div>
+    </section>
+
+    <section class="about1">
+        <div class="about-content"><h2>Découvrir l'épicentre du tremblement de terre </h2></div>
+        <div id="controls">
+            <button id="showEpicenter">Afficher l'Épicentre</button>
+        </div>
+        <div id="map" ></div>
+        <script type="text/javascript">
+        
+            var map = new L.Map('map');
+            var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+            var osmAttrib='Map data &copy; OpenStreetMap contributors';
+            var osm = new L.TileLayer(osmUrl, {minZoom: 5, maxZoom: 18, attribution: osmAttrib});
+
+            map.addLayer(osm);
+            map.setView(new L.LatLng(31.3, -8.4), 10);
+            
+            //Plugin magic goes here! Note that you cannot use the same layer object again, as that will confuse the two map controls
+            var osm2 = new L.TileLayer(osmUrl, {minZoom: 0, maxZoom: 13, attribution: osmAttrib });
+            var miniMap = new L.Control.MiniMap(osm2, { toggleDisplay: true }).addTo(map);
+            // Créer un LayerGroup spécifique pour le rectangle, mais ne l'ajouter qu'à la mini-carte
+            const bounds = [[31.0, -9.0], [31.6, -7.0]];  // Définir les coordonnées du rectangle
+            const rectangle = L.rectangle(bounds, { color: "#ff7800", weight: 2 });  // Créer le rectangle
+
+           
+
+        </script>
+        <script>
+            const epicenter = [31.3, -8.4]; 
+            const amplitude = 6.8;
+            const placeName = "Al Haouz"; 
+            const affectedPlaces = ["Amizmiz", "Ouarzazate", "Taroudant", "Marrakech", "Chichaoua"];
+
+            let epicenterMarker = null;
+            let epicenterCircles = [];
+
+            function showEpicenter() {
+                map.setView(epicenter, 12, { animate: true });
+
+                if (epicenterMarker) return;
+
+                epicenterMarker = L.marker(epicenter).addTo(map)
+                    .bindPopup(`
+                        <b>Nom de la place :</b> ${placeName}<br>
+                        <b>Amplitude :</b> ${amplitude} sur l'échelle de Richter<br>
+                        <b>Lieux affectés :</b> ${affectedPlaces.join(', ')}
+                    `)
+                    .on('popupclose', function() {
+                        map.removeLayer(epicenterMarker);
+                        epicenterCircles.forEach(circle => map.removeLayer(circle));
+                        epicenterMarker = null;
+                        epicenterCircles = [];
+                    })
+                    .openPopup();
+
+                let propagationRadius = 1000;
+                const maxRadius = 50000;
+
+                function animateCircles() {
+                    map.eachLayer((layer) => {
+                        if (layer instanceof L.Circle && layer.options.interactive !== true) {
+                            map.removeLayer(layer);
+                        }
+                    });
+
+                    const circle = L.circle(epicenter, {
+                        color: 'red',
+                        fillColor: 'yellow',
+                        fillOpacity: 0,
+                        radius: propagationRadius
+                    }).addTo(map);
+
+                    epicenterCircles.push(circle);
+
+                    propagationRadius += 3000;
+
+                    if (propagationRadius > maxRadius) {
+                        propagationRadius = 1000;
+                    }
+
+                    setTimeout(animateCircles, 500);
+                }
+
+                animateCircles();
+            }
+
+            document.getElementById('showEpicenter').addEventListener('click', showEpicenter);
+        </script>
+    </section>
+
+    <section id="contact">
+        <h2>Contactez-nous</h2>
+        <p>Vous avez des questions ou des suggestions ? Envoyez-nous un message :</p>
+        <form action="https://formspree.io/f/mjkvlgoz" method="POST">
+            <label for="name">Nom :</label>
+            <input type="text" id="name" name="name" required>
+        
+            <label for="email">Email :</label>
+            <input type="email" id="email" name="email" required>
+        
+            <label for="message">Message :</label>
+            <textarea id="message" name="message" rows="5" required></textarea>
+        
+            <button type="submit">Envoyer</button>
+        </form>        
+      </section>
+     
+
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <h3>IHM <br> Société Topographique Since 2016</h3>
+                <p class="footer-address">
+                    Al Haouz en carte <br>
+                    Explorer l'Impact du Séisme sur les Bâtiments
+                </p>
+            </div>
+            <div class="footer-links">
+                <h4>Des liens utiles</h4>
+                <ul>
+                    <li><a href="C:\Users\ThinkPad\Downloads\Nouveau dossier\plateforme2originale.html">Géoportail</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="Articles.html">Articles</a></li>
+                    <li><a href="contact.html">À Propos de Nous</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Adresse</h4>
+                <p>Avenue Al Amane, Hay Tilila </p>
+                <p>AGADIR, MAROC</p>
+                <p>+212 520-363-688</p>
+                <p>+212 661-268-738</p>
+                <a href="mailto:IHMSARL@gmail.com">IHMSARL@gmail.com</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 Géoportail El Haouz. Tous droits réservés à IHM sarl</p>
+        </div>
+    </footer>
+</body>
+</html>

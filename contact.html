@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <title>Géoportail d'El Haouz-Services</title>
+    <link rel="icon" href="logopage.png" type="image/png">
+<style>
+    
+     /* Spinner style */
+     #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #4e5cd8;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+     /* Style de l'en-tête */
+         header {
+            background-color: #255d98; /* Couleur bleu similaire */
+            position:fixed;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            font-family: Arial, sans-serif;
+            color: white;
+            z-index: 1000;
+            top: 0;          /* Aligné au bord supérieur */
+            left: 0;
+            width: 100%;     /* Prend toute la largeur */
+            height: 80px; /* Ajustez selon votre besoin */
+        }
+        /* Ajoutez un espace après le header */
+        body {
+            margin-top: 80px; /* Correspond à la hauteur du header */
+        }
+                /* Logo */
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            width: 100px; /* Taille de logo ajustée */
+            height: auto;
+            margin-right: 15px;
+        }
+        /* Titre */
+        h1 {
+            font-size: 20px; /* Taille du titre ajustée pour plus de lisibilité */
+            color: white; /* Couleur du texte en blanc */
+            font-weight: 40; /* Poids du texte plus léger */
+            text-transform: uppercase; /* Majuscules */
+            letter-spacing: 1px; /* Espacement entre les lettres pour une meilleure lisibilité */
+            margin: 0;
+            font-family: 'Arial', sans-serif; /* Police moderne */
+            line-height: 1; /* Espacement entre les lignes pour aérer le texte */
+            text-shadow: 1px 1px 4px rgba(40, 40, 40, 0.5); /* Ombre légère et subtile */
+        }
+
+        a {
+            text-decoration: none; /* Supprime le soulignement des liens */
+            color: inherit; /* Assure que le lien hérite de la couleur du texte parent */
+        }
+
+        a:hover {
+            text-decoration: none; /* Supprime le soulignement au survol */
+            color: inherit; /* Conserve la couleur au survol */
+        }
+
+        /* Menu de navigation */
+        nav {
+            flex-grow: 1;
+            text-align: right;
+            display: flex;
+            justify-content: flex-end; /* Assurez-vous que les éléments sont alignés à droite */
+        }
+
+        .nav-links {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex; /* Flexbox pour aligner les éléments sur la même ligne */
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-item {
+            position: relative;
+            white-space: nowrap; /* Empêche la coupure de ligne dans chaque élément */
+        }
+
+        /* Liens du menu */
+        .nav-item a {
+            text-decoration: none;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            padding: 12px 18px;
+            border-radius: 4px;
+            display: block;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        /* Effet de survol pour les liens */
+        .nav-item a:hover {
+            background-color: #0056b3; /* Fond bleu au survol */
+            color: white;
+            transform: translateY(-2px); /* Effet d'élévation */
+        }
+
+        /* Sous-menu */
+        .submenu {
+            display: none;
+            list-style: none;
+            padding: 0;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #ffffff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            min-width: 200px;
+            border-radius: 5px;
+            z-index: 10;
+        }
+
+        /* Liens dans le sous-menu */
+        .submenu li a {
+            color: #333;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 10px 20px;
+            display: block;
+            transition: color 0.3s ease, background-color 0.3s ease;
+        }
+
+        /* Effet au survol des liens dans le sous-menu */
+        .submenu li a:hover {
+            background-color: #f1f1f1;
+            color: #007bff;
+        }
+
+        /* Afficher le sous-menu au survol de la nav-item */
+        .nav-item:hover .submenu {
+            display: block;
+        }
+
+        .nav-item:hover > a {
+            color: #0056b3; /* Change la couleur du lien principal lors du survol */
+        }
+
+        /* Animation d'apparition du sous-menu */
+        .submenu {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-item:hover .submenu {
+            opacity: 1;
+        }
+
+        /* Ajout d'un effet de transition douce à l'apparition du menu */
+        .nav-item:hover > a {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+                /* Style de la flèche */
+                .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4e5cd8;;
+            color: white;
+            border-radius: 50%;
+            padding: 10px;
+            font-size: 2rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: none; /* Par défaut, la flèche est cachée */
+        }
+
+        /* Flèche au survol */
+        .back-to-top:hover {
+            background-color: #4e5cd8;;
+        }
+        
+        .main-header {
+            background: #2c3e50;
+            color: #fff;
+            padding: 1rem 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-menu li {
+            margin: 0 15px;
+        }
+
+        .nav-menu a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .nav-menu a.active {
+            border-bottom: 2px solid #e74c3c;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-top: 100px; /* Espacement pour le titre sous le header */
+            margin: 2rem 0;
+            font-size: 2rem;
+            color: #2c3e50;
+        }
+
+        .search-bar-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        #search-bar {
+            width: 50%;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        /* Style général du footer */
+        .footer {
+            background-color: #255d98;
+            color: white;
+            width: 100%;
+            padding: 40px 20px;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        /* Style pour chaque section du footer */
+        .footer-left, .footer-links, .footer-contact {
+            flex: 1;
+            padding: 10px;
+            margin: 10px;
+            max-width: 300px;
+        }
+
+        .footer-left h3, .footer-links h4, .footer-contact h4 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .footer-left p, .footer-contact p {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Liste de liens utiles */
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin: 10px 0;
+        }
+
+        .footer-links a {
+            color: #d7d29f;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #d9d1d1c7;
+        }
+
+        /* Style du bas de page (footer-bottom) */
+        .footer-bottom {
+            background-color: #255d98;
+            padding: 20px;
+            font-size: 1rem;
+            color: #ecf0f1;
+        }
+
+        .footer-bottom p {
+            margin: 5px 0;
+        }
+
+        /* Responsive design pour les petits écrans */
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        /* About Section */
+        .about {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 40px;
+        background-color: #f4f4f4;
+        }
+
+        .about-content {
+        flex: 1;
+        padding-right: 30px;
+        }
+
+        .about-content h2 {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: #333;
+        }
+
+        .about-content p {
+        font-size: 1.2rem;
+        color: #666;
+        }
+
+        .about-image {
+        flex: 1;
+        position: relative;
+        }
+
+        .about-image img {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .about-image::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0); /* dark overlay */
+        border-radius: 8px;
+        }
+
+        /* Objective Section */
+        .objective {
+        background-color: #fff;
+        padding: 40px;
+        text-align: center;
+        }
+
+        .objective h3 {
+        font-size: 2rem;
+        font-weight: 500;
+        margin-bottom: 20px;
+        }
+
+        .objective p {
+        font-size: 1.2rem;
+        color: #555;
+        line-height: 1.6;
+        }
+
+        /* Team Section */
+        .team {
+        background-color: #fff;
+        padding: 60px 40px;
+        text-align: center;
+        }
+
+        .team h2 {
+        font-size: 2.5rem;
+        font-weight: 600;
+        margin-bottom: 40px;
+        color: #333;
+        }
+
+        .team-members {
+        display: flex;
+        justify-content: space-around;
+        gap: 30px;
+        flex-wrap: wrap;
+        }
+
+        .team-member {
+        background-color: #f4f4f4;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        text-align: center;
+        width: 250px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .team-member:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .member-photo {
+        width: 120px; /* Adjusted width */
+        height: 120px; /* Adjusted height */
+        border-radius: 50%;
+        margin-bottom: 15px;
+        }
+
+
+        .team-member h3 {
+        font-size: 1.6rem;
+        font-weight: 500;
+        color: #333;
+        }
+
+        .team-member p {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 10px;
+        }
+
+        .team-member a {
+        font-size: 1rem;
+        color: #007BFF;
+        text-decoration: none;
+        }
+
+        .team-member a:hover {
+        text-decoration: underline;
+        }
+</style>
+
+<body>
+    <!-- Spinner -->
+    <div id="loading">
+        <div class="spinner"></div>
+    </div>
+    <script>
+        // Simuler un chargement long
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+            }, 3000); // 3 secondes pour tester visuellement
+        });
+    </script>
+
+    <header>
+        <div class="header-logo">
+            <img src="C:\Users\ThinkPad\Desktop\haouz\logo_S.png" alt="Logo" class="logo">
+            <a href="oooooooo.html">
+            <h1>Al Haouz en Carte : </br> Explorer l'Impact du Séisme sur les Bâtiments</h1>
+            </a>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="C:\Users\ThinkPad\Downloads\Nouveau dossier\plateforme2originale.html">Géoportail d'Al Haouz</a>
+                </li>
+                <li class="nav-item">
+                    <a href="services.html">Services</a>
+                    <ul class="submenu">
+                        <li><a href="services.html">Analyse des Bâtiments</a></li>
+                        <li><a href="services.html">Cartographie Interactive</a></li>
+                        <li><a href="services.html">Statistiques Détaillées</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="Articles.html">Articles</a>
+                </li>
+                <li class="nav-item"><a href="contact.html">À Propos de Nous</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="back-to-top">
+        ↑
+    </div>
+    <script>
+        // Lorsque l'utilisateur défile
+    window.onscroll = function () {
+        var backToTopButton = document.querySelector('.back-to-top');
+
+        // Vérifier si on a défilé assez bas pour afficher la flèche
+        if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+            backToTopButton.style.display = "block"; // Afficher la flèche
+            backToTopButton.style.opacity = 1; // Rendre la flèche visible
+        } else {
+            backToTopButton.style.display = "none"; // Cacher la flèche quand on est en haut
+        }
+    };
+
+    // Lorsque l'on clique sur la flèche
+    document.querySelector('.back-to-top').addEventListener('click', function () {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth' // Défilement fluide jusqu'en haut
+        });
+    });
+    </script>
+
+<section class="about">
+    <div class="about-content">
+      <h2>À Propos de IHM - Travaux Topographiques</h2>
+      <p>Fondée en 2016, IHM est une société spécialisée dans les travaux topographiques, offrant des solutions de cartographie et d’analyse géospatiale à haute précision. Basée à Hay Tilila, Agadir, Nous mettons à disposition de nos clients des services complets allant de l’acquisition des données topographiques à leur traitement et analyse, pour une meilleure gestion de l’espace et des infrastructures.</p>
+    </div>
+    <div class="about-image">
+      <img src="C:\Users\ThinkPad\Desktop\haouz\logo S.png" alt="Surveying Equipment">
+    </div>
+  </section>
+  <section class="objective">
+    <h3>Notre Objectif</h3>
+    <p>Notre objectif est de fournir des services topographiques de qualité, en utilisant des technologies innovantes pour garantir des résultats précis et fiables. Nous nous engageons à soutenir nos clients dans leurs projets de développement, d’aménagement et de gestion des risques en apportant une expertise technique sur mesure, adaptée à chaque besoin spécifique.</p>
+  </section>
+  <section id="team" class="team">
+    <h2>Notre Équipe</h2>
+    <div class="team-members">
+        <!-- Membre 1 -->
+        <div class="team-member">
+            <img src="C:\Users\ThinkPad\Desktop\haouz\hind.jpeg" alt="Photo de hind" class="member-photo">
+            <h3>Hind Hafidi </h3>
+            <p>ÉTUDIANTE EN 3 CI SCIENCES GÉOMATIQUE ET INGÉNIERIE TOPOGRAPHIQUE</p>
+            <a href="mailto:hafidihined@gmail.com">hafidihined@gmail.com</a>
+        </div>
+
+        <!-- Membre 2 -->
+        <div class="team-member">
+            <img src="C:\Users\ThinkPad\Desktop\haouz\ilham.jpeg" alt="Photo de ilham" class="member-photo">
+            <h3>Ilham ait ikene</h3>
+            <p>ÉTUDIANTE EN 3 CI SCIENCES GÉOMATIQUE ET INGÉNIERIE TOPOGRAPHIQUE</p>
+            <a href="mailto:ilham.aitikene@iav.ac.ma">ilham.aitikene@iav.ac.ma</a>
+        </div>
+
+        <!-- Membre 3 -->
+        <div class="team-member">
+            <img src="C:\Users\ThinkPad\Desktop\haouz\meryeeem.jpeg" alt="Photo de meryeem" class="member-photo">
+            <h3>Mebrouk meryem</h3>
+            <p>ÉTUDIANTE EN 3 CI SCIENCES GÉOMATIQUE ET INGÉNIERIE TOPOGRAPHIQUE</p>
+            <a href="mailto:youssef@geoportail.com">mebrouk.meryem@iav.ac.ma</a>
+        </div>
+    </div>
+</section>
+
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-left">
+            <h3>IHM <br> Société Topographique Since 2016</h3>
+            <p class="footer-address">
+                Al Haouz en carte <br>
+                Explorer l'Impact du Séisme sur les Bâtiments
+            </p>
+        </div>
+        <div class="footer-links">
+            <h4>Des liens utiles</h4>
+            <ul>
+                <li><a href="C:\Users\ThinkPad\Downloads\Nouveau dossier\plateforme2originale.html">Géoportail</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="Articles.html">Articles</a></li>
+                <li><a href="contact.html">À Propos de Nous</a></li>
+            </ul>
+        </div>
+        <div class="footer-contact">
+            <h4>Adresse</h4>
+            <p>Avenue Al Amane, Hay Tilila </p>
+            <p>AGADIR, MAROC</p>
+            <p>+212 520-363-688</p>
+            <p>+212 661-268-738</p>
+            <a href="mailto:IHMSARL@gmail.com">IHMSARL@gmail.com</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2024 Géoportail El Haouz. Tous droits réservés à IHM sarl</p>
+    </div>
+</footer>
+
+
+</body>
+</html>

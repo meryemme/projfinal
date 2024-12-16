@@ -1,0 +1,16 @@
+var camptahnaout = {
+"type": "FeatureCollection",
+"name": "Camp_tahnaout",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "obj_type": "Camp", "obj_desc": "Temporary camp", "elem_count": "5", "det_method": "Photo-interpretation", "notation": "Not Applicable", "or_src_id": 2, "dmg_src_id": 2, "cd_value": "Not Applicable" }, "geometry": { "type": "Point", "coordinates": [ -7.925871136999945, 31.362824558000057 ] } },
+{ "type": "Feature", "properties": { "obj_type": "Camp", "obj_desc": "Temporary camp", "elem_count": "1", "det_method": "Photo-interpretation", "notation": "Not Applicable", "or_src_id": 2, "dmg_src_id": 2, "cd_value": "Not Applicable" }, "geometry": { "type": "Point", "coordinates": [ -7.949570154999947, 31.350147640000046 ] } },
+{ "type": "Feature", "properties": { "obj_type": "Camp", "obj_desc": "Temporary camp", "elem_count": "3", "det_method": "Photo-interpretation", "notation": "Not Applicable", "or_src_id": 2, "dmg_src_id": 2, "cd_value": "Not Applicable" }, "geometry": { "type": "Point", "coordinates": [ -7.970975090999957, 31.287266350000039 ] } },
+{ "type": "Feature", "properties": { "obj_type": "Camp", "obj_desc": "Temporary camp", "elem_count": "7", "det_method": "Photo-interpretation", "notation": "Not Applicable", "or_src_id": 2, "dmg_src_id": 2, "cd_value": "Not Applicable" }, "geometry": { "type": "Point", "coordinates": [ -7.970891809999955, 31.287656582000068 ] } },
+{ "type": "Feature", "properties": { "obj_type": "Camp", "obj_desc": "Temporary camp", "elem_count": "4", "det_method": "Photo-interpretation", "notation": "Not Applicable", "or_src_id": 2, "dmg_src_id": 2, "cd_value": "Not Applicable" }, "geometry": { "type": "Point", "coordinates": [ -7.969912423999972, 31.286952340000028 ] } },
+{ "type": "Feature", "properties": { "obj_type": "Camp", "obj_desc": "Temporary camp", "elem_count": "3", "det_method": "Photo-interpretation", "notation": "Not Applicable", "or_src_id": 2, "dmg_src_id": 2, "cd_value": "Not Applicable" }, "geometry": { "type": "Point", "coordinates": [ -7.966769706999969, 31.286882852000076 ] } },
+{ "type": "Feature", "properties": { "obj_type": "Camp", "obj_desc": "Temporary camp", "elem_count": "1", "det_method": "Photo-interpretation", "notation": "Not Applicable", "or_src_id": 2, "dmg_src_id": 2, "cd_value": "Not Applicable" }, "geometry": { "type": "Point", "coordinates": [ -7.968411534999973, 31.284411187000046 ] } },
+{ "type": "Feature", "properties": { "obj_type": "Camp", "obj_desc": "Temporary camp", "elem_count": "1", "det_method": "Photo-interpretation", "notation": "Not Applicable", "or_src_id": 2, "dmg_src_id": 2, "cd_value": "Not Applicable" }, "geometry": { "type": "Point", "coordinates": [ -7.968518610999979, 31.28406319100003 ] } },
+{ "type": "Feature", "properties": { "obj_type": "Camp", "obj_desc": "Temporary camp", "elem_count": "3", "det_method": "Photo-interpretation", "notation": "Not Applicable", "or_src_id": 2, "dmg_src_id": 2, "cd_value": "Not Applicable" }, "geometry": { "type": "Point", "coordinates": [ -7.966005840999969, 31.286966411000037 ] } }
+]
+}

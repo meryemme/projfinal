@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <title>Géoportail d'Al Haouz - Articles</title>
+    <link rel="icon" href="logopage.png" type="image/png">
+    <style>
+         /* Spinner style */
+         #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #4e5cd8;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        /* Style identique au code précédent pour le header, la navigation, et le footer */
+        header {
+            background-color: #255d98; /* Couleur bleu similaire */
+            position:fixed;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            font-family: Arial, sans-serif;
+            color: white;
+            z-index: 1000;
+            top: 0;          /* Aligné au bord supérieur */
+            left: 0;
+            width: 100%;     /* Prend toute la largeur */
+            height: 80px; /* Ajustez selon votre besoin */
+        }
+
+        /* Ajoutez un espace après le header */
+        body {
+            margin-top: 80px; /* Correspond à la hauteur du header */
+        }
+
+        /* Logo */
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            width: 100px; /* Taille de logo ajustée */
+            height: auto;
+            margin-right: 15px;
+        }
+        /* Titre */
+        h1 {
+            font-size: 20px; /* Taille du titre ajustée pour plus de lisibilité */
+            color: white; /* Couleur du texte en blanc */
+            font-weight: 40; /* Poids du texte plus léger */
+            text-transform: uppercase; /* Majuscules */
+            letter-spacing: 1px; /* Espacement entre les lettres pour une meilleure lisibilité */
+            margin: 0;
+            font-family: 'Arial', sans-serif; /* Police moderne */
+            line-height: 1; /* Espacement entre les lignes pour aérer le texte */
+            text-shadow: 1px 1px 4px rgba(40, 40, 40, 0.5); /* Ombre légère et subtile */
+        }
+        a {
+            text-decoration: none; /* Supprime le soulignement des liens */
+            color: inherit; /* Assure que le lien hérite de la couleur du texte parent */
+        }
+
+        a:hover {
+            text-decoration: none; /* Supprime le soulignement au survol */
+            color: inherit; /* Conserve la couleur au survol */
+        }
+        /* Menu de navigation */
+        nav {
+            flex-grow: 1;
+            text-align: right;
+            display: flex;
+            justify-content: flex-end; /* Assurez-vous que les éléments sont alignés à droite */
+        }
+
+        .nav-links {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex; /* Flexbox pour aligner les éléments sur la même ligne */
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-item {
+            position: relative;
+            white-space: nowrap; /* Empêche la coupure de ligne dans chaque élément */
+        }
+
+        /* Liens du menu */
+        .nav-item a {
+            text-decoration: none;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            padding: 12px 18px;
+            border-radius: 4px;
+            display: block;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        /* Effet de survol pour les liens */
+        .nav-item a:hover {
+            background-color: #0056b3; /* Fond bleu au survol */
+            color: white;
+            transform: translateY(-2px); /* Effet d'élévation */
+        }
+
+        /* Sous-menu */
+        .submenu {
+            display: none;
+            list-style: none;
+            padding: 0;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #ffffff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            min-width: 200px;
+            border-radius: 5px;
+            z-index: 10;
+        }
+
+        /* Liens dans le sous-menu */
+        .submenu li a {
+            color: #333;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 10px 20px;
+            display: block;
+            transition: color 0.3s ease, background-color 0.3s ease;
+        }
+
+        /* Effet au survol des liens dans le sous-menu */
+        .submenu li a:hover {
+            background-color: #f1f1f1;
+            color: #007bff;
+        }
+
+        /* Afficher le sous-menu au survol de la nav-item */
+        .nav-item:hover .submenu {
+            display: block;
+        }
+
+        .nav-item:hover > a {
+            color: #b1bcc8; /* Change la couleur du lien principal lors du survol */
+        }
+
+        /* Animation d'apparition du sous-menu */
+        .submenu {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-item:hover .submenu {
+            opacity: 1;
+        }
+
+        /* Ajout d'un effet de transition douce à l'apparition du menu */
+        .nav-item:hover > a {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+                /* Style de la flèche */
+                .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4e5cd8;;
+            color: white;
+            border-radius: 50%;
+            padding: 10px;
+            font-size: 2rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: none; /* Par défaut, la flèche est cachée */
+        }
+
+        /* Flèche au survol */
+        .back-to-top:hover {
+            background-color: #4e5cd8;;
+        }
+        
+        .main-header {
+            background: #2c3e50;
+            color: #fff;
+            padding: 1rem 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-menu li {
+            margin: 0 15px;
+        }
+
+        .nav-menu a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .nav-menu a.active {
+            border-bottom: 2px solid #e74c3c;
+        }
+
+        .page-title {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-top: 100px;
+        color: #255d98;
+        }
+
+        .article-description1 {
+        max-width: 900px;
+        margin: 0 auto 20px auto;
+        text-align: center;
+        font-size: 1rem;
+        color: #000000;
+        }
+
+        .search-bar-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        #search-bar {
+            width: 50%;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+/* Style général du footer */
+        .footer {
+            background-color: #255d98;
+            color: white;
+            width: 100%;
+            padding: 40px 20px;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        /* Style pour chaque section du footer */
+        .footer-left, .footer-links, .footer-contact {
+            flex: 1;
+            padding: 10px;
+            margin: 10px;
+            max-width: 300px;
+        }
+
+        .footer-left h3, .footer-links h4, .footer-contact h4 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .footer-left p, .footer-contact p {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Liste de liens utiles */
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin: 10px 0;
+        }
+
+        .footer-links a {
+            color: #d7d29f;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #d9d1d1c7;
+        }
+
+        /* Style du bas de page (footer-bottom) */
+        .footer-bottom {
+            background-color: #255d98;
+            padding: 20px;
+            font-size: 1rem;
+            color: #ecf0f1;
+        }
+
+        .footer-bottom p {
+            margin: 5px 0;
+        }
+
+        /* Responsive design pour les petits écrans */
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Ajout de styles spécifiques pour les articles */
+        .article-list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 2rem;
+        }
+
+        .article-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            background: #ffffff;
+            margin: 1rem 0;
+            padding: 1rem;
+            width: 80%;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .article-image {
+            width: 100%; /* L'image occupe toute la largeur de son conteneur */
+            max-width: 300px; /* Largeur maximale pour éviter qu'elle soit trop grande */
+            height: auto; /* Maintient les proportions de l'image */
+            margin: 0 auto; /* Centre l'image si elle est dans un conteneur */
+            border-radius: 10px; /* Coins légèrement arrondis */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ombre pour un effet esthétique */
+            border: 2px solid #ddd; /* Bordure légère et élégante */
+        }
+
+        .article-description {
+            max-width: 600px;
+        }
+
+        .article-description h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #140582;
+        }
+
+        .article-description p {
+            margin: 0.5rem 0;
+            color: #000000;
+        }
+
+        .article-link {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #850a0a;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .article-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+        <!-- Spinner -->
+        <div id="loading">
+            <div class="spinner"></div>
+        </div>
+        <script>
+            // Simuler un chargement long
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                }, 3000); // 3 secondes pour tester visuellement
+            });
+        </script>
+    <header>
+        <div class="header-logo">
+            <img src="C:\Users\ThinkPad\Desktop\haouz\logo_S.png" alt="Logo" class="logo">
+            <a href="oooooooo.html">
+            <h1>Al Haouz en Carte : <br> Explorer l'Impact du Séisme sur les Bâtiments</h1>
+            </a>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li class="nav-item"><a href="C:\Users\ThinkPad\Downloads\Nouveau dossier\plateforme2originale.html">Géoportail d'Al Haouz</a></li>
+                <li class="nav-item">
+                    <a href="services.html">Services</a>
+                    <ul class="submenu">
+                        <li><a href="services.html">Analyse des Bâtiments</a></li>
+                        <li><a href="services.html">Cartographie Interactive</a></li>
+                        <li><a href="services.html">Statistiques Détaillées</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="Articles.html" class="active">Articles</a>
+
+                </li>
+                <li class="nav-item"><a href="contact.html">À Propos de Nous</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="articles-page">
+        <h1 class="page-title">Les Articles</h1>
+        <div class="article-description1">
+            <p>
+                Consultez les articles pour comprendre les enjeux et les solutions apportées face aux défis posés par le séisme d'Al Haouz.</p>
+        </div>
+        <div class="search-bar-container">
+            <input type="text" id="search-bar" placeholder="Recherchez un article..." onkeyup="searchArticles()">
+        </div>
+
+        <section class="article-list">
+            <div class="article-item" id="article1">
+                <img src="ARTICLES1.png" alt="Article 1" class="article-image">
+                <div class="article-description">
+                    <h2>Le Chef du gouvernement préside la 11ème réunion de la Commission interministérielle pour la reconstruction des zones sinistrées par le séisme d'Al Haouz</h2>
+                    <p>Lors de la 11ème réunion de la Commission interministérielle, le Chef du gouvernement a supervisé les avancées et les mesures prises pour la reconstruction des zones affectées par le séisme d'Al Haouz. Cette rencontre a permis de discuter des plans de relogement, de réhabilitation des infrastructures et des initiatives pour soutenir les communautés touchées par cette catastrophe naturelle. La priorité a été donnée à une approche coordonnée entre les différents ministères et acteurs concernés, afin de garantir une reprise rapide et efficace de la vie dans les régions sinistrées.</p>
+                    <a href="https://www.cg.gov.ma/fr/node/11903" class="article-link">Lire l'article</a>
+                </div>
+            </div>
+
+            <div class="article-item" id="article2">
+                <img src="articles2.png" alt="Article 2" class="article-image">
+                <div class="article-description">
+                    <h2>Séisme d'Al Haouz : Bilan et Plan de Reconstruction Quatre Mois Après</h2>
+                    <p>Quatre mois après le séisme dévastateur d'Al Haouz, les efforts de reconstruction se poursuivent avec un programme ambitieux d'aides et de réhabilitation. Le bilan actuel fait état de 2.946 morts et 5.674 blessés. Des mesures d’urgence ont été prises pour les sinistrés, notamment un relogement temporaire et des aides financières. Un programme agricole d’envergure a également été lancé pour redynamiser les régions touchées. En parallèle, le soutien aux orphelins et aux communautés affectées est renforcé.</p>
+                    <a href="https://fnh.ma/article/actualite-culturelle/seisme-haouz-quatre-mois-apres#:~:text=2.946%20morts%20et%205.674,soir%C3%A9e%20du%208%20septembre%202023" class="article-link">Lire l'article</a>
+                </div>
+            </div>
+
+            <div class="article-item" id="article3">
+                <img src="articles3.png" alt="Article 3" class="article-image">
+                <div class="article-description">
+                    <h2>Séisme d'Al Haouz : Une Estimation du Coût des Dégâts</h2>
+                    <p> Le séisme dévastateur qui a frappé la région d'Al Haouz pourrait engendrer des pertes économiques allant jusqu'à 106 milliards de dirhams, soit 8% du PIB du Maroc. Si le secteur touristique, pilier économique du pays, a été partiellement touché, l'impact sur l'industrie est jugé limité. Cependant, la reconstruction des infrastructures, des logements et des sites historiques endommagés représente un défi majeur. Le gouvernement travaille activement sur l'évaluation des besoins pour la relance économique et sociale de la région.</p>
+                    <a href="https://www.lavieeco.com/affaires/seisme-dal-haouz-a-combien-se-montera-la-facture/" class="article-link">Lire l'article</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function searchArticles() {
+            const input = document.getElementById('search-bar').value.toLowerCase();
+            const articles = document.querySelectorAll('.article-item');
+            let found = false;
+
+            articles.forEach(article => {
+                const text = article.innerText.toLowerCase();
+                const match = text.includes(input);
+                article.style.display = match ? 'flex' : 'none';
+                if (match) found = true;
+            });
+
+            if (!found && input.length > 0) {
+                alert("Aucun article correspondant trouvé.");
+            }
+        }
+    </script>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <h3>IHM <br> Société Topographique Since 2016</h3>
+                    <p class="footer-address">
+                        Al Haouz en carte <br>
+                        Explorer l'Impact du Séisme sur les Bâtiments
+                    </p>
+                </div>
+                <div class="footer-links">
+                    <h4>Des liens utiles</h4>
+                    <ul>
+                        <li><a href="C:\Users\ThinkPad\Downloads\Nouveau dossier\plateforme2originale.html">Géoportail</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="Articles.html">Articles</a></li>
+                        <li><a href="contact.html">À Propos de Nous</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>Adresse</h4>
+                    <p>Avenue Al Amane, Hay Tilila </p>
+                    <p>AGADIR, MAROC</p>
+                    <p>+212 520-363-688</p>
+                    <p>+212 661-268-738</p>
+                    <a href="mailto:IHMSARL@gmail.com">IHMSARL@gmail.com</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 Géoportail El Haouz. Tous droits réservés à IHM sarl</p>
+            </div>
+        </footer>
+</body>
+</html>
