@@ -499,24 +499,24 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
         // Définir les limites géographiques pour les images
-        var bounds1 = [[31.003079570,-8.373025900], [30.955138592,-8.322707683]];
-        var bounds2 = [[31.003065583,-8.320686468], [30.954925952,-8.265444268]];
-        var bounds3 = [[31.226489593,-8.004402950], [31.179051450,-7.948722320]];
-        var bounds4 = [[31.136962154,-8.109889247], [31.089524011,-8.084284925]];
-        var bounds5 = [[31.038096153,-8.211035085], [31.091422962,-8.108830849]];
-        var bounds6 = [[31.135419428,-8.160850587], [31.091422962, -8.108830849]];
-        var bounds7 = [[31.181569683,-8.095739598], [31.168581190, -8.07468673]];
-        var bounds8 = [[31.156168136,-8.109455612], [31.136570308, -8.085583090]];
+        var bounds1 = [[31.204307857,-7.962045642], [31.198302283,-7.955685495]];
+        var bounds2 = [[31.129239810,-8.099223909], [31.134156409,-8.094953401]];
+        var bounds3 = [[30.985062215,-8.289370250], [30.981688262,-8.285579468]];
+        var bounds4 = [[31.001938023,-8.343366644], [30.999304553,--8.339278871]];
+        var bounds5 = [[30.999595507,-8.176301392], [31.001083296,-8.172940091]];
+        var bounds6 = [[31.124728037,-8.120845204], [31.122302357, -8.118742423]];
+        var bounds7 = [[31.174172010,-8.083070547], [31.172470098, -8.080627987]];
+        var bounds8 = [[31.167814078,-8.141337423], [31.159591915,-8.134123341];
 
         // Ajouter des superpositions d'images
-        var afterImage1 = L.imageOverlay('images satelitaire/img1.png', bounds1);
-        var afterImage2 = L.imageOverlay('images satelitaire/img2.png', bounds2);
-        var afterImage3 = L.imageOverlay('images satelitaire/img3.png', bounds3);
-        var afterImage4 = L.imageOverlay('images satelitaire/img4.png', bounds4);
-        var afterImage5 = L.imageOverlay('images satelitaire/img5.png', bounds5);
-        var afterImage6 = L.imageOverlay('images satelitaire/img6.png', bounds6);
-        var afterImage7 = L.imageOverlay('images satelitaire/img7.png', bounds7);
-        var afterImage8 = L.imageOverlay('images satelitaire/img8.png', bounds8);
+        var afterImage1 = L.imageOverlay('img1.png', bounds1);
+        var afterImage2 = L.imageOverlay('img2.png', bounds2);
+        var afterImage3 = L.imageOverlay('img3.png', bounds3);
+        var afterImage4 = L.imageOverlay('img4.png', bounds4);
+        var afterImage5 = L.imageOverlay('img5.png', bounds5);
+        var afterImage6 = L.imageOverlay('img6.png', bounds6);
+        var afterImage7 = L.imageOverlay('img7.png', bounds7);
+        var afterImage8 = L.imageOverlay('img8.png', bounds8);
 
         // Fonction pour basculer l'affichage du menu
         function toggleMenu() {
